@@ -2,39 +2,46 @@
 
 ## Overview
 
-Todo Streak App is a React-based application that helps users track their habits and maintain streaks. It allows for both daily and weekly tracking of tasks, with a flexible UI for managing todos and viewing progress.
+Todo Streak App is a React-based application designed to help users track their habits and maintain streaks. It supports both daily and weekly tracking of tasks, offering a flexible UI for managing todos and viewing progress.
 
 ## Features
 
-- Add and manage todo items
-- Choose between daily or weekly tracking for each todo
-- Schedule specific days for daily todos
-- Set weekly goals for weekly todos
-- View and maintain streaks for completed todos
-- Change the current date for testing and back-tracking
-- Persist data using local storage
+- **Add and Manage Todos:** Easily add, edit, and delete todo items.
+- **Tracking Options:** Choose between daily or weekly tracking for each todo.
+  - **Daily Tracking:** Schedule specific days for tracking habits.
+  - **Weekly Tracking:** Set weekly goals for how many times a habit should be completed.
+- **Streak Management:** View and maintain streaks for completed todos.
+- **Date Manipulation:** Change the current date to test streak features and backtrack habits.
+- **Data Persistence:** Persist data using local storage, with optional syncing to Cloud Firestore.
+- **Longest Streak Tracking:** Keep track of the longest streak for each habit.
 
 ## Technologies Used
 
-- React
-- TypeScript
-- Vite (for build tooling)
-- Local Storage for data persistence
+- **React**: For building the user interface.
+- **TypeScript**: For type safety and better code management.
+- **Vite**: For fast build tooling.
+- **Local Storage**: For data persistence.
+- **Tailwind CSS**: For styling the application.
+- **Shadcn UI**: For UI components and skeleton loading states.
+- **Cloud Firestore**: Optional cloud storage for data syncing.
 
 ## Setup and Running the Application
 
-1. Clone the repository:
-   ```
+1. **Clone the Repository:**
+
+   ```bash
    git clone https://github.com/kumard3/todo-streak-app.git
    cd todo-streak-app
    ```
 
 2. Install dependencies:
+
    ```
    pnpm install
    ```
 
 3. Start the development server:
+
    ```
    pnpm run dev
    ```
@@ -46,6 +53,7 @@ Todo Streak App is a React-based application that helps users track their habits
 To create a production build:
 
 1. Run the build command:
+
    ```
    pnpm run build
    ```
@@ -62,4 +70,5 @@ To create a production build:
 - `src/App.tsx`: Main component that manages the overall state and renders child components
 - `src/components/`: Contains individual components (TodoList, TodoForm, DateSelector)
 - `src/types.ts`: TypeScript interfaces for the application
-- `src/utils/`: Utility functions for storage and streak calculation
+- `src/lib/`: Utility functions for storage and streak calculation
+- `src/service/`: Contains service functions for handling data operations and interactions with local storage and Firestore.
