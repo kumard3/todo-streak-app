@@ -21,17 +21,29 @@ import { days } from "@/data/day";
 import RenderDayCheckbox from "./ui/RenderDayCheckbox";
 
 interface AddTodoDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
   onAdd: (todo: Omit<Todo, "id" | "streak" | "longestStreak">) => void;
 }
 
-export const AddTodo: React.FC<AddTodoDialogProps> = ({ onClose, onAdd }) => {
+/**
+ * Represents the AddTodo component.
+ * @component
+ * @param {Object} props - The component props.
+ * @param {boolean} props.isOpen - Indicates whether the dialog is open or not.
+ * @param {Function} props.onClose - The function to close the dialog.
+ * @param {Function} props.onAdd - The function to add a new habit.
+ * @returns {JSX.Element} The rendered AddTodo component.
+ */
+export const AddTodo: React.FC<AddTodoDialogProps> = ({ onAdd }) => {
+  const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [type, setType] = useState<"daily" | "weekly">("daily");
   const [weeklyGoal, setWeeklyGoal] = useState(1);
   const [scheduledDays, setScheduledDays] = useState<string[]>([]);
 
+  /**
+   * Handles the form submission.
+   * @param {React.FormEvent} e - The form event.
+   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onAdd({
@@ -44,11 +56,11 @@ export const AddTodo: React.FC<AddTodoDialogProps> = ({ onClose, onAdd }) => {
     setType("daily");
     setWeeklyGoal(1);
     setScheduledDays([]);
-    onClose();
+    setOpen(false);
   };
 
   return (
-    <Dialog>
+    <Dialog modal open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>Add Habit</Button>
       </DialogTrigger>
@@ -57,6 +69,7 @@ export const AddTodo: React.FC<AddTodoDialogProps> = ({ onClose, onAdd }) => {
           <DialogTitle>Add a New Habit</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Input for habit name */}
           <Input
             type="text"
             value={title}
@@ -64,6 +77,7 @@ export const AddTodo: React.FC<AddTodoDialogProps> = ({ onClose, onAdd }) => {
             placeholder="Enter habit name"
             required
           />
+          {/* Select for tracking type */}
           <Select
             value={type}
             onValueChange={(value) => setType(value as "daily" | "weekly")}
@@ -76,6 +90,7 @@ export const AddTodo: React.FC<AddTodoDialogProps> = ({ onClose, onAdd }) => {
               <SelectItem value="weekly">Weekly</SelectItem>
             </SelectContent>
           </Select>
+          {/* Input for weekly goal (only shown when type is weekly) */}
           {type === "weekly" && (
             <Input
               type="number"
@@ -86,6 +101,7 @@ export const AddTodo: React.FC<AddTodoDialogProps> = ({ onClose, onAdd }) => {
               className="w-full"
             />
           )}
+          {/* Render checkboxes for each day (only shown when type is daily) */}
           {type === "daily" && (
             <div className="flex flex-wrap gap-2">
               {days.map((day) => (
@@ -105,6 +121,7 @@ export const AddTodo: React.FC<AddTodoDialogProps> = ({ onClose, onAdd }) => {
             </div>
           )}
           <DialogFooter>
+            {/* Button to add the habit */}
             <Button type="submit" className="w-full">
               Add Habit
             </Button>

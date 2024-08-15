@@ -1,37 +1,15 @@
 import { CheckedState } from "@radix-ui/react-checkbox";
 import { Checkbox } from "./checkbox";
 
-// export default function RenderScheduledDays({
-//   scheduledDays,
-//   setScheduledDays,
-//   onCheckedChange,
-// }: {
-//   scheduledDays: string[];
-//   setScheduledDays?: React.Dispatch<React.SetStateAction<string[]>>;
-//   onCheckedChange?(checked: CheckedState): void;
-// }) {
-//   return (
-//     <div className="flex flex-wrap gap-2">
-//       {days.map((day) => (
-//         <RenderDayCheckbox
-//           key={day}
-//           day={day}
-//           checked={scheduledDays.includes(day) ? true : false}
-//           onCheckedChange={(checked) => {
-//             if (setScheduledDays) {
-//               setScheduledDays((prev) =>
-//                 checked ? [...prev, day] : prev.filter((d) => d !== day)
-//               );
-//             }
-//             if (onCheckedChange) {
-//               onCheckedChange(checked);
-//             }
-//           }}
-//         />
-//       ))}
-//     </div>
-//   );
-// }
+/**
+ * Renders a checkbox for a specific day.
+ *
+ * @param {Object} props - The component props.
+ * @param {string} props.day - The day to be displayed.
+ * @param {CheckedState} [props.checked] - The state of the checkbox (optional).
+ * @param {function} props.onCheckedChange - The callback function to handle checkbox state changes.
+ * @returns {JSX.Element} The rendered checkbox component.
+ */
 export default function RenderDayCheckbox({
   day,
   onCheckedChange,
@@ -42,8 +20,11 @@ export default function RenderDayCheckbox({
   onCheckedChange: ((checked: CheckedState) => void) | undefined;
 }) {
   return (
+    // Label for the checkbox
     <label key={day} className="flex items-center space-x-2">
+      {/* Checkbox component */}
       <Checkbox checked={checked} onCheckedChange={onCheckedChange} />
+      {/* Display the day */}
       <span>{day}</span>
     </label>
   );

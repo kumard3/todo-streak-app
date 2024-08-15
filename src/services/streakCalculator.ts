@@ -1,5 +1,12 @@
 import { Todo, CompletionHistory } from "@/types";
 
+/**
+ * Calculates the streak for a given todo based on completion history and current date.
+ * @param todo - The todo object.
+ * @param completionHistory - The completion history object.
+ * @param currentDate - The current date.
+ * @returns The streak value.
+ */
 export const calculateStreak = (
   todo: Todo,
   completionHistory: CompletionHistory,
