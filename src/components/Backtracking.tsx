@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Todo } from "../types";
+import { Todo } from "@/types";
 import { formatDate } from "@/lib/dateUtils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

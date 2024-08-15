@@ -8,13 +8,10 @@ interface TodoItemProps {
   todo: Todo;
   onComplete: (id: string) => void;
   onUpdateSettings: (id: string, updates: Partial<Todo>) => void;
+  onDelete: (id: string) => void;
 }
 
-export const TodoItem: React.FC<TodoItemProps> = ({
-  todo,
-  onComplete,
-  onUpdateSettings,
-}) => {
+export const TodoItem: React.FC<TodoItemProps> = ({ todo, onComplete, onUpdateSettings, onDelete }) => {
   return (
     <Card className="shadow-lg rounded-lg p-4 mb-4">
       <CardHeader>
@@ -26,12 +23,10 @@ export const TodoItem: React.FC<TodoItemProps> = ({
             <p className="text-sm">Current Streak: {todo.streak}</p>
             <p className="text-sm">Longest Streak: {todo.longestStreak}</p>
           </div>
-          <Button
-            onClick={() => onComplete(todo.id)}
-            className="bg-green-500 text-white"
-          >
-            Complete
-          </Button>
+          <div className="flex space-x-2">
+            <Button onClick={() => onComplete(todo.id)} className="bg-green-500 text-white">Complete</Button>
+            <Button onClick={() => onDelete(todo.id)} className="bg-red-500 text-white">Delete</Button>
+          </div>
         </div>
         <HabitSettings todo={todo} onUpdateSettings={onUpdateSettings} />
       </CardContent>

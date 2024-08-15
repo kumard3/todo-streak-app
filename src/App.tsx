@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { AddTodo } from "./components/AddTodo";
-import { TodoList } from "./components/TodoList";
-import { DateChanger } from "./components/DateChanger";
-import { Backtracking } from "./components/Backtracking";
-import { useLocalStorage } from "./hooks/useLocalStorage";
-import { Todo, CompletionHistory } from "./types";
-import { calculateStreak } from "./services/streakCalculator";
+import { AddTodo } from "@/components/AddTodo";
+import { TodoList } from "@/components/TodoList";
+import { DateChanger } from "@/components/DateChanger";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { Todo, CompletionHistory } from "@/types";
+import { calculateStreak } from "@/services/streakCalculator";
 import { formatDate } from "@/lib/dateUtils";
 
 export const App: React.FC = () => {
@@ -13,6 +12,7 @@ export const App: React.FC = () => {
   const [completionHistory, setCompletionHistory] =
     useLocalStorage<CompletionHistory>("completionHistory", {});
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     updateStreaks();
@@ -55,32 +55,35 @@ export const App: React.FC = () => {
     );
   };
 
-  const handleBacktrack = (id: string, date: string) => {
-    setCompletionHistory((prevHistory) => ({
-      ...prevHistory,
-      [id]: { ...(prevHistory[id] || {}), [date]: true },
-    }));
+  const deleteTodo = (id: string) => {
+    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
   };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Habit Tracker</h1>
+      {/* Add Habit */}
+      <AddTodo
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAdd={addTodo}
+      />
+      <DateChanger currentDate={currentDate} onDateChange={setCurrentDate} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <DateChanger
-            currentDate={currentDate}
-            onDateChange={setCurrentDate}
-          />
-          <AddTodo onAdd={addTodo} />
-          <Backtracking todos={todos} onBacktrack={handleBacktrack} />
-        </div>
-        <div>
-          <TodoList
-            todos={todos}
-            onComplete={completeTodo}
-            onUpdateSettings={updateTodoSettings}
-          />
-        </div>
+        <TodoList
+          title="Daily Habits"
+          todos={todos.filter((todo) => todo.type === "daily")}
+          onComplete={completeTodo}
+          onUpdateSettings={updateTodoSettings}
+          onDelete={deleteTodo}
+        />
+        <TodoList
+          title="Weekly Habits"
+          todos={todos.filter((todo) => todo.type === "weekly")}
+          onComplete={completeTodo}
+          onUpdateSettings={updateTodoSettings}
+          onDelete={deleteTodo}
+        />
       </div>
     </div>
   );

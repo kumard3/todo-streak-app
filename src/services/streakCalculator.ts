@@ -1,4 +1,4 @@
-import { Todo, CompletionHistory } from "../types";
+import { Todo, CompletionHistory } from "@/types";
 
 export const calculateStreak = (
   todo: Todo,
@@ -6,7 +6,7 @@ export const calculateStreak = (
   currentDate: Date
 ): number => {
   let streak = 0;
-  let date = new Date(currentDate);
+  const date = new Date(currentDate);
   const history = completionHistory[todo.id] || {};
 
   if (todo.type === "daily") {
