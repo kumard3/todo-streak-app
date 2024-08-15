@@ -50,7 +50,7 @@ export const getHabits = async (): Promise<Todo[]> => {
           weeklyGoal:
             doc.data().weeklyGoal !== undefined ? doc.data().weeklyGoal : 1,
         })) as Todo[];
-        if (cloudHabits.length > 0) {
+        if (cloudHabits?.length > 0) {
           // Sync local storage with cloud data
           saveToLocalStorage(cloudHabits);
         }
