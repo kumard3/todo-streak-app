@@ -21,120 +21,60 @@ const loadFromLocalStorage = (): Todo[] => {
 };
 
 export const addHabit = async (habit: Todo) => {
-  console.log(navigator.onLine);
-  console.log(habit);
+  addHabitToLocal(habit);
   if (navigator.onLine) {
     try {
       await addDoc(collection(db, "habits"), habit);
     } catch (e) {
-      console.error("Error adding document: ", e);
-      const localData = loadFromLocalStorage();
-      localData.push(habit);
-      saveToLocalStorage(localData);
+      console.error("Error adding document to Firestore: ", e);
     }
-  } else {
-    const localData = loadFromLocalStorage();
-    localData.push(habit);
-    saveToLocalStorage(localData);
   }
 };
 
 export const getHabits = async (): Promise<Todo[]> => {
+  const localHabits = loadFromLocalStorage();
   if (navigator.onLine) {
     try {
       const querySnapshot = await getDocs(collection(db, "habits"));
-      const habits = querySnapshot.docs.map((doc) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          title: data.title || "Untitled",
-          type: data.type || "daily",
-          streak: data.streak || 0,
-          longestStreak: data.longestStreak || 0,
-          scheduledDays: data.scheduledDays || [],
-          weeklyGoal: data.weeklyGoal || 1,
-        } as Todo;
-      });
-      saveToLocalStorage(habits); // Sync local storage with cloud
-      return habits;
+      const cloudHabits = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Todo[];
+      if (cloudHabits.length > 0) {
+        saveToLocalStorage(cloudHabits); // Sync local storage with cloud
+        return cloudHabits;
+      }
     } catch (e) {
-      console.error("Error fetching documents: ", e);
-      return loadFromLocalStorage();
+      console.error("Error fetching documents from Firestore: ", e);
     }
-  } else {
-    return loadFromLocalStorage();
   }
+  return localHabits;
 };
 
-/**
- * Updates a habit with the specified ID.
- * If the device is online, the habit will be updated in the database.
- * If the device is offline, the habit will be updated in the local storage.
- *
- * @param {string} id - The ID of the habit to update.
- * @param {Partial<Todo>} updates - The updates to apply to the habit.
- * @returns {Promise<void>} - A promise that resolves when the habit is updated.
- */
-export const updateHabit = async (
-  id: string,
-  updates: Partial<Todo>
-): Promise<void> => {
+export const updateHabit = async (id: string, updates: Partial<Todo>) => {
+  updateHabitInLocal(id, updates);
   if (navigator.onLine) {
     try {
       const habitRef = doc(db, "habits", id);
       await updateDoc(habitRef, updates);
     } catch (e) {
-      console.error("Error updating document: ", e);
-      const localData = loadFromLocalStorage();
-      const index = localData.findIndex((habit) => habit.id === id);
-      if (index !== -1) {
-        localData[index] = { ...localData[index], ...updates };
-        saveToLocalStorage(localData);
-      }
-    }
-  } else {
-    const localData = loadFromLocalStorage();
-    const index = localData.findIndex((habit) => habit.id === id);
-    if (index !== -1) {
-      localData[index] = { ...localData[index], ...updates };
-      saveToLocalStorage(localData);
+      console.error("Error updating document in Firestore: ", e);
     }
   }
 };
 
-/**
- * Deletes a habit by its ID.
- * If the device is online, the habit is deleted from the database.
- * If the device is offline, the habit is deleted from the local storage.
- *
- * @param {string} id - The ID of the habit to delete.
- * @returns {Promise<void>} - A promise that resolves when the habit is deleted.
- */
-export const deleteHabit = async (id: string): Promise<void> => {
+export const deleteHabit = async (id: string) => {
+  deleteHabitFromLocal(id);
   if (navigator.onLine) {
     try {
       const habitRef = doc(db, "habits", id);
       await deleteDoc(habitRef);
     } catch (e) {
-      console.error("Error deleting document: ", e);
-      const localData = loadFromLocalStorage();
-      const updatedData = localData.filter((habit) => habit.id !== id);
-      saveToLocalStorage(updatedData);
+      console.error("Error deleting document from Firestore: ", e);
     }
-  } else {
-    const localData = loadFromLocalStorage();
-    const updatedData = localData.filter((habit) => habit.id !== id);
-    saveToLocalStorage(updatedData);
   }
 };
 
-/**
- * Calculates the streak of completing a todo based on the provided completion history and current date.
- * @param todo - The todo object.
- * @param completionHistory - The completion history object.
- * @param currentDate - The current date.
- * @returns The streak of completing the todo.
- */
 export const calculateStreak = (
   todo: Todo,
   completionHistory: CompletionHistory,
@@ -180,4 +120,26 @@ export const calculateStreak = (
   }
 
   return streak;
+};
+
+// Local storage operations
+const addHabitToLocal = (habit: Todo) => {
+  const habits = loadFromLocalStorage();
+  habits.push(habit);
+  saveToLocalStorage(habits);
+};
+
+const updateHabitInLocal = (id: string, updates: Partial<Todo>) => {
+  const habits = loadFromLocalStorage();
+  const index = habits.findIndex((habit) => habit.id === id);
+  if (index !== -1) {
+    habits[index] = { ...habits[index], ...updates };
+    saveToLocalStorage(habits);
+  }
+};
+
+const deleteHabitFromLocal = (id: string) => {
+  const habits = loadFromLocalStorage();
+  const updatedHabits = habits.filter((habit) => habit.id !== id);
+  saveToLocalStorage(updatedHabits);
 };

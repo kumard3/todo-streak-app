@@ -14,6 +14,7 @@ import {
 } from "./services/TodoService";
 
 export const App: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [completionHistory, setCompletionHistory] = useState<CompletionHistory>(
     {}
@@ -22,8 +23,10 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       const habits = await getHabits();
       setTodos(habits);
+      setIsLoading(false);
     };
     fetchData();
   }, []);
@@ -108,6 +111,7 @@ export const App: React.FC = () => {
           onComplete={completeTodo}
           onUpdateSettings={updateTodoSettings}
           onDelete={deleteTodo}
+          isLoading={isLoading}
         />
         {/* TodoList component for displaying weekly habits */}
         <TodoList
@@ -116,6 +120,7 @@ export const App: React.FC = () => {
           onComplete={completeTodo}
           onUpdateSettings={updateTodoSettings}
           onDelete={deleteTodo}
+          isLoading={isLoading}
         />
       </div>
     </div>

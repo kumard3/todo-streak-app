@@ -13,14 +13,24 @@ interface TodoItemProps {
 }
 
 /**
- * Renders a single todo item.
+ * Renders a TodoItem component.
  *
  * @component
- * @param {TodoItemProps} props - The props for the TodoItem component.
+ * @example
+ * ```tsx
+ * <TodoItem
+ *   todo={todo}
+ *   onComplete={handleComplete}
+ *   onUpdateSettings={handleUpdateSettings}
+ *   onDelete={handleDelete}
+ * />
+ * ```
+ *
+ * @param {TodoItemProps} props - The component props.
  * @param {Todo} props.todo - The todo object.
- * @param {Function} props.onComplete - The function to call when the todo is completed.
- * @param {Function} props.onUpdateSettings - The function to call when the todo settings are updated.
- * @param {Function} props.onDelete - The function to call when the todo is deleted.
+ * @param {Function} props.onComplete - The function to handle todo completion.
+ * @param {Function} props.onUpdateSettings - The function to handle todo settings update.
+ * @param {Function} props.onDelete - The function to handle todo deletion.
  * @returns {JSX.Element} The rendered TodoItem component.
  */
 export const TodoItem: React.FC<TodoItemProps> = ({
