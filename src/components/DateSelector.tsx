@@ -1,5 +1,3 @@
-// src/components/DateSelector.tsx
-
 import React from 'react';
 
 interface DateSelectorProps {

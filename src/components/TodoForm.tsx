@@ -21,6 +21,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ addTodo }) => {
       scheduledDays:
         trackingType === "daily" ? [0, 1, 2, 3, 4, 5, 6] : undefined,
       weeklyGoal: trackingType === "weekly" ? 1 : undefined,
+      longestStreak: 0, // Add this line
     };
 
     addTodo(newTodo);

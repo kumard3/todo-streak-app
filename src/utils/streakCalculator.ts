@@ -3,9 +3,9 @@ import { Todo } from "../types";
 /**
  * Calculates the streak of completed todos based on the given parameters.
  *
- * @param todo - The todo object to calculate the streak for.
- * @param currentDate - The current date to use as a reference for the streak calculation.
- * @returns The streak count as a number.
+ * @param todo - The todo object.
+ * @param currentDate - The current date.
+ * @returns The streak of completed todos.
  */
 export const calculateStreak = (todo: Todo, currentDate: Date): number => {
   const sortedCompletions = [...todo.completions].sort(
