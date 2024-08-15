@@ -49,8 +49,8 @@ export const AddTodo: React.FC<AddTodoDialogProps> = ({ onAdd }) => {
     onAdd({
       title,
       type,
-      weeklyGoal: type === "weekly" ? weeklyGoal : undefined,
-      scheduledDays: type === "daily" ? scheduledDays : undefined,
+      weeklyGoal: type === "weekly" ? weeklyGoal : 1,
+      scheduledDays: type === "daily" ? scheduledDays : [],
     });
     setTitle("");
     setType("daily");

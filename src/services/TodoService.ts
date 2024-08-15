@@ -24,7 +24,7 @@ export const addHabit = async (habit: Todo) => {
   addHabitToLocal(habit);
   if (navigator.onLine) {
     try {
-      await addDoc(collection(db, "habits"), habit);
+      await Promise.resolve(await addDoc(collection(db, "habits"), habit));
     } catch (e) {
       console.error("Error adding document to Firestore: ", e);
     }
@@ -50,9 +50,10 @@ export const getHabits = async (): Promise<Todo[]> => {
           weeklyGoal:
             doc.data().weeklyGoal !== undefined ? doc.data().weeklyGoal : 1,
         })) as Todo[];
-
-        // Sync local storage with cloud data
-        saveToLocalStorage(cloudHabits);
+        if (cloudHabits.length > 0) {
+          // Sync local storage with cloud data
+          saveToLocalStorage(cloudHabits);
+        }
       } catch (e) {
         console.error("Error fetching documents from Firestore: ", e);
       }
