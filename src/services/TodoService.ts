@@ -32,22 +32,35 @@ export const addHabit = async (habit: Todo) => {
 };
 
 export const getHabits = async (): Promise<Todo[]> => {
+  // Load from local storage first
   const localHabits = loadFromLocalStorage();
-  if (navigator.onLine) {
-    try {
-      const querySnapshot = await getDocs(collection(db, "habits"));
-      const cloudHabits = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Todo[];
-      if (cloudHabits.length > 0) {
-        saveToLocalStorage(cloudHabits); // Sync local storage with cloud
-        return cloudHabits;
+
+  // Function to fetch from Firestore
+  const fetchCloudHabits = async (): Promise<void> => {
+    if (navigator.onLine) {
+      try {
+        const querySnapshot = await getDocs(collection(db, "habits"));
+        const cloudHabits = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          title: doc.data().title || "Untitled",
+          type: doc.data().type || "daily",
+          streak: doc.data().streak || 0,
+          longestStreak: doc.data().longestStreak || 0,
+          scheduledDays: doc.data().scheduledDays || [],
+          weeklyGoal:
+            doc.data().weeklyGoal !== undefined ? doc.data().weeklyGoal : 1,
+        })) as Todo[];
+
+        // Sync local storage with cloud data
+        saveToLocalStorage(cloudHabits);
+      } catch (e) {
+        console.error("Error fetching documents from Firestore: ", e);
       }
-    } catch (e) {
-      console.error("Error fetching documents from Firestore: ", e);
     }
-  }
+  };
+
+  fetchCloudHabits();
+
   return localHabits;
 };
 
