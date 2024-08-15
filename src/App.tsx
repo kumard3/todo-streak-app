@@ -2,45 +2,50 @@ import React, { useState, useEffect } from "react";
 import { AddTodo } from "@/components/AddTodo";
 import { TodoList } from "@/components/TodoList";
 import { DateChanger } from "@/components/DateChanger";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { Todo, CompletionHistory } from "@/types";
-import { calculateStreak } from "@/services/streakCalculator";
 import { formatDate } from "@/lib/dateUtils";
 import { Backtracking } from "./components/Backtracking";
+import {
+  addHabit,
+  calculateStreak,
+  deleteHabit,
+  getHabits,
+  updateHabit,
+} from "./services/TodoService";
 
 export const App: React.FC = () => {
-  // State hooks
-  const [todos, setTodos] = useLocalStorage<Todo[]>("todos", []);
-  const [completionHistory, setCompletionHistory] =
-    useLocalStorage<CompletionHistory>("completionHistory", {});
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [completionHistory, setCompletionHistory] = useState<CompletionHistory>(
+    {}
+  );
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  // Update streaks whenever completion history or current date changes
+  useEffect(() => {
+    const fetchData = async () => {
+      const habits = await getHabits();
+      setTodos(habits);
+    };
+    fetchData();
+  }, []);
+
   useEffect(() => {
     updateStreaks();
   }, [completionHistory, currentDate]);
 
-  // Add a new todo
-  const addTodo = (newTodo: Omit<Todo, "id" | "streak" | "longestStreak">) => {
+  const addTodo = async (
+    newTodo: Omit<Todo, "id" | "streak" | "longestStreak">
+  ) => {
     const todo: Todo = {
       ...newTodo,
       id: Date.now().toString(),
       streak: 0,
       longestStreak: 0,
+      weeklyGoal: 0,
     };
     setTodos((prevTodos) => [...prevTodos, todo]);
+    await addHabit(todo);
   };
 
-  // Handle backtrack for a specific todo and date
-  const handleBacktrack = (id: string, date: string) => {
-    setCompletionHistory((prevHistory) => ({
-      ...prevHistory,
-      [id]: { ...(prevHistory[id] || {}), [date]: true },
-    }));
-    updateStreaks();
-  };
-
-  // Mark a todo as completed for the current date
   const completeTodo = (id: string) => {
     const dateString = formatDate(currentDate);
     setCompletionHistory((prevHistory) => ({
@@ -49,7 +54,14 @@ export const App: React.FC = () => {
     }));
   };
 
-  // Update streaks for all todos
+  const handleBacktrack = (id: string, date: string) => {
+    setCompletionHistory((prevHistory) => ({
+      ...prevHistory,
+      [id]: { ...(prevHistory[id] || {}), [date]: true },
+    }));
+    updateStreaks();
+  };
+
   const updateStreaks = () => {
     setTodos((prevTodos) =>
       prevTodos.map((todo) => {
@@ -63,16 +75,16 @@ export const App: React.FC = () => {
     );
   };
 
-  // Update settings for a specific todo
-  const updateTodoSettings = (id: string, updates: Partial<Todo>) => {
+  const updateTodoSettings = async (id: string, updates: Partial<Todo>) => {
     setTodos((prevTodos) =>
       prevTodos.map((todo) => (todo.id === id ? { ...todo, ...updates } : todo))
     );
+    await updateHabit(id, updates);
   };
 
-  // Delete a todo
-  const deleteTodo = (id: string) => {
+  const deleteTodo = async (id: string) => {
     setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+    await deleteHabit(id);
   };
 
   return (
